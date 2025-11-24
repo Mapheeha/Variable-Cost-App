@@ -1,6 +1,9 @@
 streamlit
 pandas
 numpy
+matplotlib
+seaborn
 plotly
+streamlit-option-menu
+streamlit-mermaid
 openpyxl
-streamlit-option-menu 
