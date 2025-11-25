@@ -341,7 +341,7 @@ def create_sidebar():
         if element_items:
             display_items = [f"{name} : {code}" for name, code in element_items.items()]
             selected_display = option_menu(
-                selected_element,
+                "Cost Elements",
                 display_items,
                 default_index=0,
                 orientation="vertical",
