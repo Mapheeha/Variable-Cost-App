@@ -7,3 +7,4 @@ plotly
 streamlit-option-menu
 streamlit-mermaid
 openpyxl
+streamlit-lottie
