@@ -1,3 +1,5 @@
+from streamlit_lottie import st_lottie
+import requests
 import streamlit as st
 
 st.set_page_config(
@@ -8,23 +10,16 @@ st.set_page_config(
 
 st.markdown("""
     <style>
-    /* Remove top padding */
     .block-container {
         padding-top: 0rem !important;
         background-color: white !important;
     }
-
-    /* Remove sidebar background color */
     .sidebar .sidebar-content {
         background-color: white !important;
     }
-
-    /* Remove overall app tint */
     .stApp {
         background-color: white !important;
     }
-
-    /* Remove any Streamlit gray backgrounds */
     [data-testid="stAppViewContainer"] {
         background-color: white !important;
     }
@@ -34,12 +29,11 @@ st.markdown("""
 st.markdown("""
     <div style="
         margin-top: 0;
-        padding: 20px 0px;
+        padding: 25px 0px;
         text-align: center;
-        background: white;
-        color: black;
+        background: #0b4f91;
+        color: white;
         width: 100%;
-        border-bottom: 1px solid #ddd;
     ">
         <h1 style="
             font-size: 2.5rem;
@@ -52,3 +46,16 @@ st.markdown("""
     """,
     unsafe_allow_html=True
 )
+
+vFile = "https://assets10.lottiefiles.com/packages/lf20_059pfp0Z5i.json"
+r = requests.get(vFile)
+LottieCode = None if r.status_code != 200 else r.json()
+
+col1, col2, col3 = st.columns([1, 2, 1])
+
+with col2:
+    st.markdown("<br><br>", unsafe_allow_html=True)
+    if LottieCode:
+        st_lottie(LottieCode, height=600, width=600, speed=1, loop=True, key="main_lottie")
+    else:
+        st.error("Failed to load animation")

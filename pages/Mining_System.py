@@ -353,20 +353,22 @@ def create_sidebar():
                 selected_item_name = name.strip()
                 selected_item_code = code.strip()
 
-    return selected_item_name, selected_item_code
+    return selected_element, selected_item_name, selected_item_code
 
 
 def create_title_card(selected_item_name, selected_item_code):
-    display_code = (
-        selected_item_code
-        if selected_item_name == "Diesel" and selected_item_code
-        else "406105"
-    )
+    # Use the selected element’s name + code; default to Diesel 406105
+    if selected_item_name and selected_item_code:
+        title_name = selected_item_name
+        display_code = selected_item_code
+    else:
+        title_name = "Diesel"
+        display_code = "406105"
 
     st.markdown(
         f"""
         <div class="title-card">
-            Cost breakdown: Diesel {display_code}
+            Cost breakdown: {title_name} {display_code}
         </div>
         """,
         unsafe_allow_html=True,
@@ -374,7 +376,10 @@ def create_title_card(selected_item_name, selected_item_code):
     return display_code
 
 
-def create_upload_trigger():
+def create_upload_trigger(show_button: bool):
+    """Show the 'Upload diesel scenario' button only when `show_button` is True."""
+    if not show_button:
+        return
     trigger_col, _ = st.columns([1.5, 3])
     with trigger_col:
         if st.button("Upload diesel scenario", key="btn_show_scenario"):
@@ -595,7 +600,7 @@ def display_scenario_section():
                     "Please adjust the date filter or upload another file."
                 )
             else:
-                # store scenario dataframe for charts and for persistent diagram
+                # store scenario dataframe for charts and diagram
                 st.session_state["scenario_df"] = df_scenario.copy()
 
     # Always draw metrics + diagram whenever we have a scenario in session
@@ -634,22 +639,25 @@ def main():
     if "show_scenario" not in st.session_state:
         st.session_state["show_scenario"] = False
 
-    selected_item_name, selected_item_code = create_sidebar()
+    selected_element, selected_item_name, selected_item_code = create_sidebar()
     display_code = create_title_card(selected_item_name, selected_item_code)
-    create_upload_trigger()
+
+    # Only show upload button (and therefore scenario section) for Diesel
+    is_diesel = selected_item_name == "Diesel"
+    create_upload_trigger(show_button=is_diesel)
 
     try:
         df = get_data(Data["Mining System"])
 
-        if selected_item_name == "Diesel":
+        if is_diesel:
             display_diesel_analysis(df, display_code)
+            display_scenario_section()
         else:
-            st.write("Select Consumables → Diesel from the sidebar.")
+            # For Blasting / Drilling / others: no charts or scenario – just the title.
+            if not selected_item_name:
+                st.write("Select Cost Elements → Diesel from the sidebar.")
     except Exception as e:
         st.error(str(e))
-
-    # scenario section at bottom
-    display_scenario_section()
 
 
 if __name__ == "__main__":
